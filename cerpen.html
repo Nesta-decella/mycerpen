@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Langit Setelah Hujan</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Merriweather:ital,wght@0,400;1,400&display=swap');
+
+    :root {
+      --bg1: #0a192f;
+      --bg2: #102542;
+      --text: #f0f0f0;
+      --paper: rgba(255, 255, 255, 0.1);
+      --scroll: rgba(255, 255, 255, 0.3);
+    }
+    body.light {
+      --bg1: #e0ecff;
+      --bg2: #d0d8f0;
+      --text: #222;
+      --paper: rgba(255, 255, 255, 0.8);
+      --scroll: rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      transition: background 0.6s, color 0.4s;
+    }
+
+    .bg-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      z-index: 0;
+    }
+    .bg1 {
+      background-image: linear-gradient(to bottom, rgba(10,25,47,0.5), rgba(16,37,66,0.8)), 
+                        url(ke-2.jpg);
+      opacity: 1;
+    }
+    .bg2 {
+      background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(255,255,255,0.1)), 
+                        url(ke-1.jpg);
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      background: var(--paper);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 800px;
+      height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+      scroll-behavior: smooth;
+      transition: background 0.6s;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 2rem;
+    }
+    .author {
+      text-align: center;
+      font-size: 1rem;
+      font-style: italic;
+      margin-bottom: 25px;
+      opacity: 0.8;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 30px;
+      font-weight: 500;
+      font-family: 'Merriweather', serif;
+    }
+    p {
+      line-height: 1.8;
+      font-size: 1.05rem;
+      text-align: justify;
+      margin-bottom: 1.2em;
+      font-family: 'Merriweather', serif;
+    }
+    em {
+      display: block;
+      text-align: center;
+      font-style: italic;
+      opacity: 0.9;
+    }
+    hr {
+      border: none;
+      border-top: 1px dashed var(--scroll);
+      margin: 40px 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scroll);
+      border-radius: 10px;
+    }
+
+    .mode-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 5;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: background 0.3s, color 0.3s;
+    }
+    .mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* === Tentang Penulis === */
+    .about {
+      text-align: center;
+      margin-top: 60px;
+      padding: 20px;
+      border-top: 1px dashed var(--scroll);
+    }
+    .about img {
+      width: 150px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    .about p {
+      text-align: justify;
+      font-size: 1rem;
+      line-height: 1.8;
+      font-family: 'Merriweather', serif;
+    }
+    .about em {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      opacity: 0.8;
+    }
+    .social {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .social a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.3s;
+    }
+    .social a:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer bg1" id="bg1"></div>
+  <div class="bg-layer bg2" id="bg2"></div>
+  <canvas id="rain"></canvas>
+
+  <button class="mode-toggle" id="toggleMode">Light / Dark</button>
+
+  <div class="container">
+    <h1>Langit Setelah Hujan</h1>
+    <div class="author">oleh Nesta Decella<br>XI TJKT  2<br>Bahasa Indonesia</div>
+
+    <h2>— Bab 1 —<br>Langit yang Buram</h2> <p>Hujan sore itu turun perlahan, seperti menenangkan kota yang telah padam. Langit diselimuti awan abu-abu yang menua, menyeramkan bagi orang awam, namun justru menenangkan bagi hati yang lelah.</p> <p>Di balik kaca itu, seorang remaja duduk diam. Tubuhnya condong ke depan, matanya mengikuti jatuhnya air di luar. Namanya Wang, anak laki-laki yang dulu selalu tertawa keras, namun kini lebih banyak berbicara dalam diam.</p> <p>Entah sejak kapan ia berhenti takut menatap hujan, dan sudah berapa lama ia tak benar-benar tersenyum. Terkadang, ia merasa seperti bayangan dalam genangan air, terlihat utuh, namun goyah setiap kali angin datang.</p> <p>Hari-harinya terasa datar. Ia tak tahu mengapa hidupnya begitu kosong, meski bagi orang lain, ia tampak baik-baik saja. Ia mengingat kesalahan yang tak bisa dihapus, hanya bisa diterima.</p> <p>Ia mengingat wajah seseorang yang sempat ia kecewakan. Kesalahan yang sama terus menelannya perlahan, membuatnya lemah, dan penuh penyesalan.</p> <hr> <h2>— Bab 2 —<br>Cahaya di Tengah Gerimis</h2> <p>Di balik suasana hati Wang yang belum sempat pulih, ia tidak sedang mencari siapa pun. Namun semesta mempertemukannya dengan seseorang yang membuat langkahnya terhenti — Rina. Perempuan dengan tatapan jujur, paras teduh, dan suara yang menenangkan, seperti lagu yang tak pernah selesai diputar.</p> <p>Rina bukan orang asing. Ia berada di lingkar yang sama, di sekolah yang sama. Awalnya, hanya sekadar sapa, lalu percakapan kecil, hingga akhirnya menjadi sosok yang diam-diam mengisi ruang kosong di hati Wang. Rina datang di waktu yang aneh, ketika Wang masih bergulat dengan penyesalan, dan hatinya belum benar-benar tenang.</p> <p>Untuk pertama kalinya setelah sekian lama, Wang merasa dirinya tidak sedang berpura-pura. Rina datang bukan membawa cahaya, melainkan cermin, yang membuat Wang berani menatap siapa dirinya sebenarnya.</p> <p>Hari-hari bersama Rina bukan tentang cinta, tapi tentang sembuh. Ia tidak mencoba menghapus luka, tapi menuntun Wang untuk berdamai dengan masa lalu. Dengan kehadirannya, hidup Wang mulai berwarna lagi, ada tawa kecil, percakapan hangat, dan ketenangan yang dulu sempat ia lupa rasakan.</p> <p>Namun, di balik senyum yang tumbuh, ada sesuatu yang perlahan tumbuh tanpa Wang sadari, cinta. Bukan cinta yang gegap gempita, tapi yang tenang, lembut, dan penuh rasa syukur.</p> <p>Rina menjadi alasan Wang ingin memperbaiki diri, bukan agar dicintai, melainkan agar ia pantas untuk mencintai. Ia mulai belajar menata diri, menata iman, menata arah hidupnya. Karena bagi Wang, Rina adalah bukti bahwa Tuhan masih memberinya kesempatan untuk berubah.</p> <p>Tapi ketika hatinya mulai tenang, dan langkahnya mulai ringan, justru saat itu ia sadar: semakin dekat ia dengan Rina, semakin besar pula ketakutannya akan melukai.</p> <p>Wang tahu dirinya belum sepenuhnya bersih. Ia mencintai Rina, namun juga takut, takut cinta itu menjerumuskannya, bukan menyelamatkannya.</p> <p>Suatu sore, di bawah gerimis yang pelan, Wang akhirnya bicara. Suaranya bergetar, namun matanya jujur.</p> <p>“Rina... aku bukan menjauh karena benci. Aku menjauh karena aku mencintaimu, dan aku takut mencintaimu dengan cara yang salah.”</p> <p>Rina terdiam, menatapnya lama. Tidak ada amarah, tidak ada tangis, hanya keheningan yang berat tapi penuh pengertian. Wang menunduk. Dalam hatinya ia tahu, keputusan itu menyakitkan. Tapi untuk pertama kalinya, ia memilih jalan yang benar, meski harus berjalan sendirian.</p> <p>Sejak hari itu, Rina dan Wang tak lagi sering bicara. Namun dalam diam mereka sama-sama tahu, ada doa yang masih saling bertemu di langit, setiap kali hujan turun pelan.</p> <hr> <h2>— Bab 3 —<br>Langit Setelah Hujan</h2> <p>Hari kelulusan itu datang tanpa Wang siapkan hatinya. Langit begitu cerah, tapi rasanya seperti baru saja menangis, Wang sekarang sudah jauh lebih tenang. Sekolah dipenuhi suara tawa, kilatan kamera, dan ucapan selamat di udara. Namun di antara semua itu, Wang justru merasa hening—seperti sedang menunggu sesuatu yang tidak tahu apa.</p> <p>Sampai akhirnya, Rina datang. Dengan senyum yang masih sama, dan langkah pelan yang penuh arti. Di tangannya ada secarik kertas kecil, dilipat rapi, lalu diselipkan ke tangan Wang tanpa banyak kata.</p> <p>“Selamat wisuda yaa, senang melihatmu di akhir sekolah, tapi aku harap aku masih bisa melihatmu setelah lulus...”</p> <p>Hanya itu. Sederhana, tapi cukup untuk membuat Wang tak bisa berkata apa-apa. Ada rasa haru, sesal, dan damai bercampur jadi satu. Ia tahu, itu bukan sekadar ucapan selamat, itu adalah perpisahan yang lembut, yang hanya bisa dilakukan dua orang yang sama-sama mengerti: kadang cinta terbaik adalah yang memilih diam.</p> <p>Mereka sempat berfoto bersama, satu senyum yang tersimpan dalam kenangan. Bukan senyum dua orang yang berpisah karena benci, tapi dua hati yang rela mundur agar sama-sama tumbuh di jalan yang benar.</p> <p>Malamnya, Wang duduk kembali di depan jendela yang sama. Kali ini tanpa hujan, hanya sisa embun yang menempel di kaca. Di tangannya, catatan kecil dari Rina masih terlipat rapi. Ia membuka pelan, membacanya sekali lagi, lalu tersenyum tipis. Wang teringat dan tergambar dalam benaknya, "Rina menulis ini mungkin dengan tangan yang gugup? haha."</p> <p>Ada sedih, tapi juga tenang. Karena dari semua yang telah terjadi, ia sadar, menjauh bukan berarti menghilang, melainkan menjaga agar keduanya tetap selamat.</p> <p>Ia menatap langit yang mulai terang oleh cahaya bulan. Dan untuk pertama kalinya setelah sekian lama, Wang berbisik pelan: “Terima kasih, Rina... sudah membuatku ingin menjadi lebih baik.”</p> <em>Langit setelah hujan tidak lagi abu-abu.<br>Kini, di bawah sinarnya yang lembut, Wang menatap masa depannya dengan langkah baru, tenang, jernih, dan penuh harapan.</em>
+
+    <em>Langit setelah hujan tidak lagi abu-abu.<br>Kini, di bawah sinarnya yang lembut, Wang menatap masa depannya dengan langkah baru, tenang, jernih, dan penuh harapan.</em>
+
+    <!-- === Biodata Penulis === -->
+    <div class="about">
+      <img src="mode formal wkwk.jpg" alt="Foto Penulis"></i>
+      <p>
+        Penulis bernama <b>Nesta Decella</b>, lahir dan besar di Bandung, saat ini berusia 16 tahun dan bersekolah di SMK Negeri 5 Bandung Jurusan Teknik Jaringan Komputer (TKJ). 
+        Ia dikenal sebagai pribadi yang observatif, sering memperhatikan hal-hal kecil di sekitarnya dan menjadikannya inspirasi dalam tulisan.
+      </p>
+      <p>
+        Melalui kisah “Langit Setelah Hujan”, penulis ingin menggambarkan perjalanan seseorang yang belajar dari kesalahan, menyesal, lalu perlahan bangkit. Ia menulis bukan untuk dikenal, melainkan untuk mengingat, bahwa setiap orang punya masa lalu, dan yang terpenting bukanlah seberapa sering kita jatuh, melainkan seberapa banyak kita bangkit setelah terjatuh.
+      </p>
+      <p>
+        Nama “Wang” hanyalah tokoh fiksi, namun kisahnya merupakan potongan nyata dari perjalanan pribadi penulis. “Rina” adalah nama samaran dari seseorang yang pernah hadir sebagai cahaya sekaligus cermin, yang membantu penulis memahami arti penyesalan, pembelajaran, dan memperbaiki diri.
+      </p>
+      <p>
+        Bagi penulis, “Langit Setelah Hujan” adalah pengingat bahwa terkadang perpisahan bukanlah akhir, melainkan awal dari versi diri yang lebih baik.
+      </p>
+      <em>“Untuk seseorang yang mungkin membaca ini, kamu tahu siapa kamu. Terima kasih, bukan karena kamu datang, tapi karena kamu pernah ada.”</em>
+
+      <div class="social">
+        sosial media: <a href="https://instagram.com/n2zd._" target="blank">@n2zd._</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('rain');
+    const ctx = canvas.getContext('2d');
+    let w, h, drops = [];
+
+    function init() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      drops = Array.from({ length: 250 }).map(() => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        l: 10 + Math.random() * 15,
+        xs: -1 + Math.random() * 2,
+        ys: 15 + Math.random() * 20
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(173, 216, 230, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.lineCap = 'round';
+      for (let d of drops) {
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x + d.xs, d.y + d.l);
+        ctx.stroke();
+      }
+      move();
+    }
+
+    function move() {
+      for (let d of drops) {
+        d.y += d.ys;
+        if (d.y > h) {
+          d.x = Math.random() * w;
+          d.y = -20;
+        }
+      }
+    }
+
+    function animate() {
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    animate();
+
+    const btn = document.getElementById('toggleMode');
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+    });
+
+    const bg1 = document.getElementById('bg1');
+    const bg2 = document.getElementById('bg2');
+    const container = document.querySelector('.container');
+
+    container.addEventListener('scroll', () => {
+      const scrollY = container.scrollTop;
+      const scrollH = container.scrollHeight - container.clientHeight;
+      const ratio = scrollY / scrollH;
+      bg2.style.opacity = Math.min(1, Math.max(0, (ratio - 0.4) * 2));
+    });
+  </script>
+</body>
+</html>
